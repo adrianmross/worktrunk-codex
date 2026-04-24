@@ -58,6 +58,7 @@ For command-specific options, run `wt <command> --help`. For Codex sessions, fol
    - Codex does not expose Claude-style `WorktreeCreate` / `WorktreeRemove` hook events
    - The plugin therefore enforces `wt` through a Bash guard hook plus command/skill guidance
    - Codex also lacks a dedicated session-end hook, so a `💬` marker can survive after the terminal closes; clear it with `wt config state marker clear`
+   - In linked git worktrees, Codex `workspace-write` can still block git writes to the shared common git dir; when that happens, relaunch with `codex -p worktree-git` or a shell wrapper that auto-selects that profile
 
 ## Two Types of Configuration
 

@@ -57,6 +57,19 @@ plugins = true
 enabled = true
 ```
 
+For linked git worktrees, add a separate profile that allows git writes into the shared common git dir:
+
+```toml
+[profiles.worktree-git]
+model = "oca/gpt-5-codex"
+model_provider = "oca_responses"
+approval_policy = "on-request"
+model_reasoning_effort = "medium"
+sandbox_mode = "danger-full-access"
+```
+
+Then launch Codex with `codex -p worktree-git`, or use a shell wrapper that automatically switches profiles when `git rev-parse --git-dir` and `git rev-parse --git-common-dir` differ.
+
 ## Recommended user prompts
 
 - "Create a new wt worktree for this task"
