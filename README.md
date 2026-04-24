@@ -1,0 +1,53 @@
+# WorkTrunk for Codex
+
+Codex plugin bundle for [`wt`](https://worktrunk.dev): repo-local WorkTrunk skills, branch activity markers, and guardrails that keep Codex on `wt` instead of raw `git worktree`.
+
+## What it adds
+
+- Synced WorkTrunk reference docs inside a Codex skill
+- Codex hooks that set `wt` branch markers:
+  - `🤖` while Codex is working
+  - `💬` when Codex is waiting for the next prompt
+- A Bash guard hook that blocks `git worktree add/remove` and tells Codex to use `wt`
+- Codex command docs for common WorkTrunk flows
+
+## Install
+
+Add the marketplace:
+
+```bash
+codex plugin marketplace add adrianmross/worktrunk-codex
+```
+
+Or from a local checkout:
+
+```bash
+codex plugin marketplace add /mnt/data/dev/adrianmross/worktrunk-codex
+```
+
+Or sync the current checkout directly into Codex's local plugin cache:
+
+```bash
+./scripts/install-local.sh
+```
+
+Enable the plugin in `~/.codex/config.toml`:
+
+```toml
+[features]
+plugins = true
+
+[plugins."worktrunk@worktrunk-codex"]
+enabled = true
+```
+
+## Requirements
+
+- `wt` on `PATH`
+- `git` on `PATH`
+- `jq` if you use the bundled Codex commit-generation example
+
+## Notes
+
+- This repo vendors WorkTrunk reference docs from `max-sixty/worktrunk` under `MIT OR Apache-2.0`.
+- Codex does not expose Claude-style worktree lifecycle hooks, so this plugin enforces `wt` through a Bash guard hook plus skills and commands.

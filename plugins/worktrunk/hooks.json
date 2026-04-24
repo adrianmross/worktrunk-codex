@@ -1,0 +1,49 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "./scripts/activity_marker.py",
+            "statusMessage": "setting WorkTrunk waiting marker"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "./scripts/activity_marker.py",
+            "statusMessage": "setting WorkTrunk active marker"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "./scripts/activity_marker.py",
+            "statusMessage": "restoring WorkTrunk waiting marker"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "^Bash$",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "./scripts/wt_guard.py",
+            "statusMessage": "checking for raw git worktree usage"
+          }
+        ]
+      }
+    ]
+  }
+}

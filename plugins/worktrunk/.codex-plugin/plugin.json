@@ -1,0 +1,46 @@
+{
+  "name": "worktrunk",
+  "version": "0.1.0",
+  "description": "WorkTrunk integration for Codex with wt-focused skills, activity markers, and worktree guardrails.",
+  "author": {
+    "name": "Adrian Ross",
+    "email": "adrian@adrianmross.dev",
+    "url": "https://github.com/adrianmross"
+  },
+  "homepage": "https://github.com/adrianmross/worktrunk-codex",
+  "repository": "https://github.com/adrianmross/worktrunk-codex",
+  "license": "MIT",
+  "keywords": [
+    "worktrunk",
+    "codex",
+    "git-worktree",
+    "developer-workflow",
+    "agentic-coding"
+  ],
+  "skills": "./skills/",
+  "hooks": "./hooks.json",
+  "interface": {
+    "displayName": "WorkTrunk",
+    "shortDescription": "wt-first worktree workflows for Codex",
+    "longDescription": "Bring WorkTrunk's wt-first git worktree workflow to Codex with synced skills, branch activity markers, slash commands, and guardrails that route worktree operations through wt instead of raw git worktree commands.",
+    "developerName": "Adrian Ross",
+    "category": "Coding",
+    "capabilities": [
+      "Interactive",
+      "Read",
+      "Write"
+    ],
+    "websiteURL": "https://github.com/adrianmross/worktrunk-codex",
+    "privacyPolicyURL": "https://github.com/adrianmross/worktrunk-codex/blob/main/PRIVACY.md",
+    "termsOfServiceURL": "https://github.com/adrianmross/worktrunk-codex/blob/main/TERMS.md",
+    "defaultPrompt": [
+      "Set up WorkTrunk for this repo",
+      "Create a wt worktree for this task",
+      "Fix this wt hook or config issue"
+    ],
+    "brandColor": "#E85D04",
+    "composerIcon": "./assets/icon.svg",
+    "logo": "./assets/logo.svg",
+    "screenshots": []
+  }
+}

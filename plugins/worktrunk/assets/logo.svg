@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 96" role="img" aria-label="WorkTrunk">
+  <rect width="320" height="96" rx="22" fill="#111827"/>
+  <path d="M28 27h12l8 31 12-34h11l12 34 8-31h12L97 73H89L66 38 43 73H35L28 27Z" fill="#F97316"/>
+  <text x="122" y="60" fill="#F9FAFB" font-family="ui-sans-serif, system-ui, sans-serif" font-size="30" font-weight="700">WorkTrunk</text>
+</svg>
