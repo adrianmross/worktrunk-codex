@@ -42,6 +42,29 @@ plugins = true
 enabled = true
 ```
 
+## Install as a Standalone Skill
+
+If you want the agent handoff guidance without installing the full Codex plugin, install the standalone skill with the open skills CLI:
+
+```bash
+npx skills add https://github.com/adrianmross/worktrunk-codex --skill worktrunk-agent-handoff
+```
+
+Useful variants:
+
+```bash
+# Install globally for Codex
+npx skills add https://github.com/adrianmross/worktrunk-codex --skill worktrunk-agent-handoff -g -a codex
+
+# Install globally for Goose
+npx skills add https://github.com/adrianmross/worktrunk-codex --skill worktrunk-agent-handoff -g -a goose
+
+# List skills exposed by this repo without installing
+npx skills add https://github.com/adrianmross/worktrunk-codex --list
+```
+
+The skill source lives at `skills/worktrunk-agent-handoff/SKILL.md`. For skills.sh compatibility, the important pieces are a public repository, a discoverable `skills/<name>/SKILL.md`, and YAML frontmatter with `name` and `description`.
+
 ## Requirements
 
 - `wt` on `PATH`
