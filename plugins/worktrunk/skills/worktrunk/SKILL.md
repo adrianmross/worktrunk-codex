@@ -28,6 +28,7 @@ See `reference/codex-plugin.md` for plugin-specific details and limitations.
 Reference files are synced from [worktrunk.dev](https://worktrunk.dev) documentation:
 
 - **reference/codex-plugin.md**: Codex-specific behavior, hooks, and limitations
+- **reference/agent-handoff.md**: Agent-native handoff flows with `wt`, `gh`, Codex, Goose, gh-dash, gh-enhance, lazygit, and Neovim
 - **reference/config.md**: User and project configuration (LLM, hooks, command defaults)
 - **reference/hook.md**: Hook types, timing, and execution order
 - **reference/switch.md**, **merge.md**, **list.md**, etc.: Command documentation
@@ -53,6 +54,7 @@ For command-specific options, run `wt <command> --help`. For Codex sessions, fol
 3. **When a request implies worktree automation, prefer Worktrunk-native flows**
    - Do not invent repo-local shell wrappers around `git worktree add` when `wt` already solves it
    - Keep repo bootstrapping in project hooks instead of in ad hoc one-off commands
+   - For agent handoff, prefer `wt switch <target> -x <agent>` and see `reference/agent-handoff.md`
 
 4. **Know the plugin limits**
    - Codex does not expose Claude-style `WorktreeCreate` / `WorktreeRemove` hook events

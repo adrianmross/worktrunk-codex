@@ -10,6 +10,7 @@ Codex plugin bundle for [`wt`](https://worktrunk.dev): repo-local WorkTrunk skil
   - `💬` when Codex is waiting for the next prompt
 - A Bash guard hook that blocks `git worktree add/remove` and tells Codex to use `wt`
 - Codex command docs for common WorkTrunk flows
+- Agent handoff guidance for launching Codex, Goose, or another agent through `wt switch -x`, with `gh-dash`, `gh-enhance`, lazygit, and Neovim treated as optional human-facing entrypoints
 
 ## Install
 
@@ -51,6 +52,18 @@ enabled = true
 
 - This repo vendors WorkTrunk reference docs from `max-sixty/worktrunk` under `MIT OR Apache-2.0`.
 - Codex does not expose Claude-style worktree lifecycle hooks, so this plugin enforces `wt` through a Bash guard hook plus skills and commands.
+
+## Agent Handoff
+
+For agent-native task starts, use WorkTrunk's execute path instead of driving a TUI:
+
+```bash
+wt switch pr:123 -x codex
+wt switch --create fix-login --base=@ -x codex -- "Fix the login regression"
+wt switch pr:123 -x goose
+```
+
+The bundled skill documents this in `skills/worktrunk/reference/agent-handoff.md`, and the `start-agent-task` command prompt gives Codex a concise workflow for PR, branch, and stacked-task handoffs.
 
 ## Linked Worktree Git Writes
 

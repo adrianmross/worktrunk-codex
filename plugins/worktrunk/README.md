@@ -7,6 +7,7 @@ Codex plugin for WorkTrunk.
 - `skills/worktrunk/` — upstream WorkTrunk references plus Codex-specific guidance
 - `hooks.json` — activity markers and `git worktree` guardrail
 - `commands/` — common WorkTrunk workflow prompts for Codex
+- `skills/worktrunk/reference/agent-handoff.md` — agent-native handoff patterns for `wt`, `gh`, Codex, Goose, gh-dash, gh-enhance, lazygit, and Neovim
 
 ## Hook behavior
 
