@@ -1,0 +1,257 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+usage() {
+  cat <<'EOF'
+Usage:
+  dev-handoff resolve <owner/repo>
+  dev-handoff lazygit <owner/repo>
+  dev-handoff wt <owner/repo> <target>
+  dev-handoff wt-current <target>
+  dev-handoff codex <owner/repo> <target> [-- <prompt...>]
+  dev-handoff codex-current <target> [-- <prompt...>]
+  dev-handoff review <owner/repo> <target> [pr-number]
+  dev-handoff review-current <target> [pr-number]
+
+Targets can be normal branch names or WorkTrunk shortcuts such as @, -, ^, or pr:123.
+EOF
+}
+
+normalize_github_slug() {
+  local value="${1:-}"
+
+  value="${value#git@github.com:}"
+  value="${value#ssh://git@github.com/}"
+  value="${value#https://github.com/}"
+  value="${value#http://github.com/}"
+  value="${value%.git}"
+
+  printf '%s\n' "$value"
+}
+
+repo_root_from_cwd() {
+  git rev-parse --show-toplevel 2>/dev/null
+}
+
+repo_slug_from_cwd() {
+  local remote_url
+
+  remote_url="$(git config --get remote.origin.url 2>/dev/null || true)"
+  if [[ -n "$remote_url" ]]; then
+    normalize_github_slug "$remote_url"
+    return 0
+  fi
+
+  gh repo view --json nameWithOwner -q .nameWithOwner 2>/dev/null || true
+}
+
+resolve_repo_path() {
+  local slug="${1:?missing repo slug}"
+  local repo owner candidate remote_url root
+  local -a candidates search_roots
+
+  slug="$(normalize_github_slug "$slug")"
+  owner="${slug%%/*}"
+  repo="${slug##*/}"
+
+  candidates=(
+    "$PWD"
+    "/mnt/data/dev/$slug"
+    "$HOME/dev/$slug"
+    "$HOME/src/$slug"
+  )
+
+  for candidate in "${candidates[@]}"; do
+    if [[ -d "$candidate" ]] && git -C "$candidate" rev-parse --show-toplevel >/dev/null 2>&1; then
+      remote_url="$(git -C "$candidate" config --get remote.origin.url 2>/dev/null || true)"
+      if [[ -z "$remote_url" || "$(normalize_github_slug "$remote_url")" == "$slug" ]]; then
+        git -C "$candidate" rev-parse --show-toplevel
+        return 0
+      fi
+    fi
+  done
+
+  search_roots=(
+    "/mnt/data/dev/$owner"
+    "$HOME/dev/$owner"
+    "$HOME/src/$owner"
+  )
+
+  for root in "${search_roots[@]}"; do
+    [[ -d "$root" ]] || continue
+
+    while IFS= read -r candidate; do
+      [[ -d "$candidate" ]] || continue
+      remote_url="$(git -C "$candidate" config --get remote.origin.url 2>/dev/null || true)"
+      if [[ -n "$remote_url" && "$(normalize_github_slug "$remote_url")" == "$slug" ]]; then
+        git -C "$candidate" rev-parse --show-toplevel
+        return 0
+      fi
+    done < <(find "$root" -maxdepth 3 -type d -name "$repo" 2>/dev/null)
+  done
+
+  return 1
+}
+
+quote_command() {
+  local quoted
+  printf -v quoted '%q ' "$@"
+  printf '%s\n' "${quoted% }"
+}
+
+review_in_worktree() {
+  local repo_slug="${1:-}"
+  local pr_number="${2:-}"
+  local base
+
+  if [[ -n "$pr_number" ]]; then
+    base="$(gh pr view "$pr_number" --repo "$repo_slug" --json baseRefName -q .baseRefName 2>/dev/null || true)"
+  else
+    base="$(gh pr view --repo "$repo_slug" --json baseRefName -q .baseRefName 2>/dev/null || true)"
+  fi
+
+  if [[ -z "$base" ]]; then
+    base="$(git remote show origin 2>/dev/null | sed -n 's/.*HEAD branch: //p' | head -n 1)"
+  fi
+
+  : "${base:=main}"
+  exec nvim "+DiffviewOpen origin/${base}...HEAD"
+}
+
+run_from_repo() {
+  local repo_path="${1:?missing repo path}"
+  shift
+
+  cd "$repo_path"
+  exec "$@"
+}
+
+run_wt_codex() {
+  local repo_path="${1:?missing repo path}"
+  local target="${2:?missing target}"
+  shift 2
+
+  cd "$repo_path"
+  if (( $# > 0 )); then
+    exec wt switch "$target" -x codex -- "$@"
+  fi
+
+  exec wt switch "$target" -x codex
+}
+
+run_wt_review() {
+  local repo_path="${1:?missing repo path}"
+  local repo_slug="${2:?missing repo slug}"
+  local target="${3:?missing target}"
+  local pr_number="${4:-}"
+  local exec_cmd
+
+  exec_cmd="$(quote_command "$0" nvim-review-in-worktree "$repo_slug" "$pr_number")"
+  cd "$repo_path"
+  exec wt switch "$target" -x "$exec_cmd"
+}
+
+main() {
+  local cmd="${1:-}"
+  local repo_slug repo_path target
+
+  case "$cmd" in
+    resolve)
+      shift
+      resolve_repo_path "${1:-}"
+      ;;
+    lazygit)
+      shift
+      repo_path="$(resolve_repo_path "${1:-}")"
+      run_from_repo "$repo_path" lazygit
+      ;;
+    wt)
+      shift
+      repo_slug="${1:-}"
+      target="${2:-}"
+      [[ -n "$repo_slug" && -n "$target" ]] || {
+        usage >&2
+        return 1
+      }
+      repo_path="$(resolve_repo_path "$repo_slug")"
+      run_from_repo "$repo_path" wt switch "$target"
+      ;;
+    wt-current)
+      shift
+      target="${1:-}"
+      [[ -n "$target" ]] || {
+        usage >&2
+        return 1
+      }
+      run_from_repo "$(repo_root_from_cwd)" wt switch "$target"
+      ;;
+    codex)
+      shift
+      repo_slug="${1:-}"
+      target="${2:-}"
+      [[ -n "$repo_slug" && -n "$target" ]] || {
+        usage >&2
+        return 1
+      }
+      shift 2
+      if [[ "${1:-}" == "--" ]]; then
+        shift
+      fi
+      repo_path="$(resolve_repo_path "$repo_slug")"
+      run_wt_codex "$repo_path" "$target" "$@"
+      ;;
+    codex-current)
+      shift
+      target="${1:-}"
+      [[ -n "$target" ]] || {
+        usage >&2
+        return 1
+      }
+      shift
+      if [[ "${1:-}" == "--" ]]; then
+        shift
+      fi
+      run_wt_codex "$(repo_root_from_cwd)" "$target" "$@"
+      ;;
+    review)
+      shift
+      repo_slug="${1:-}"
+      target="${2:-}"
+      [[ -n "$repo_slug" && -n "$target" ]] || {
+        usage >&2
+        return 1
+      }
+      repo_path="$(resolve_repo_path "$repo_slug")"
+      run_wt_review "$repo_path" "$repo_slug" "$target" "${3:-}"
+      ;;
+    review-current)
+      shift
+      target="${1:-}"
+      [[ -n "$target" ]] || {
+        usage >&2
+        return 1
+      }
+      repo_slug="$(repo_slug_from_cwd)"
+      if [[ -z "$repo_slug" ]]; then
+        echo "Failed to determine current repo slug" >&2
+        return 1
+      fi
+      run_wt_review "$(repo_root_from_cwd)" "$repo_slug" "$target" "${2:-}"
+      ;;
+    nvim-review-in-worktree)
+      shift
+      review_in_worktree "${1:-}" "${2:-}"
+      ;;
+    ""|-h|--help|help)
+      usage
+      ;;
+    *)
+      echo "Unknown command: $cmd" >&2
+      usage >&2
+      return 1
+      ;;
+  esac
+}
+
+main "$@"

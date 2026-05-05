@@ -1,0 +1,51 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Check whitespace
+        run: git diff --check "$(git hash-object -t tree /dev/null)" HEAD
+
+      - name: Validate JSON
+        run: |
+          jq empty \
+            .agents/plugins/marketplace.json \
+            plugins/worktrunk/.codex-plugin/plugin.json \
+            plugins/worktrunk/hooks.json
+
+      - name: Validate shell examples
+        run: |
+          bash -n examples/dev-handoff
+
+      - name: List exposed skills
+        run: npx --yes skills@latest add . --list
+
+      - name: Install skill for Codex
+        env:
+          HOME: ${{ runner.temp }}/home-codex
+        run: |
+          npx --yes skills@latest add . --skill worktrunk-agent-handoff --copy -y -g -a codex
+          test -f "$HOME/.agents/skills/worktrunk-agent-handoff/SKILL.md"
+
+      - name: Install skill for Goose
+        env:
+          HOME: ${{ runner.temp }}/home-goose
+        run: |
+          npx --yes skills@latest add . --skill worktrunk-agent-handoff --copy -y -g -a goose
+          test -f "$HOME/.config/goose/skills/worktrunk-agent-handoff/SKILL.md"

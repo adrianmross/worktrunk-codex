@@ -11,6 +11,8 @@ Codex plugin bundle for [`wt`](https://worktrunk.dev): repo-local WorkTrunk skil
 - A Bash guard hook that blocks `git worktree add/remove` and tells Codex to use `wt`
 - Codex command docs for common WorkTrunk flows
 - Agent handoff guidance for launching Codex, Goose, or another agent through `wt switch -x`, with `gh-dash`, `gh-enhance`, lazygit, and Neovim treated as optional human-facing entrypoints
+- Standalone `skills` CLI install support via `skills/worktrunk-agent-handoff/SKILL.md`
+- Copyable shell and TUI examples under `examples/`
 
 ## Install
 
@@ -64,6 +66,18 @@ npx skills add https://github.com/adrianmross/worktrunk-codex --list
 ```
 
 The skill source lives at `skills/worktrunk-agent-handoff/SKILL.md`. For skills.sh compatibility, the important pieces are a public repository, a discoverable `skills/<name>/SKILL.md`, and YAML frontmatter with `name` and `description`.
+
+## Examples
+
+- `examples/dev-handoff` — thin helper for repo resolution and `wt`/agent/TUI handoff
+- `examples/zsh/worktrunk-codex.zsh` — linked-worktree Codex profile wrapper plus `wtcodex` and `wtreview`
+- `examples/gh-dash/config.yml` — PR row actions for `wt`, Codex, lazygit, and Neovim review
+- `examples/lazygit/config.yml` — local-branch actions for `wt`, Codex, and Neovim review
+
+## Docs
+
+- `docs/commands.md` — canonical command reference
+- `docs/github-tuis.md` — how `gh-dash`, `gh-enhance`, lazygit, Diffview, and Octo fit around the agent flow
 
 ## Requirements
 

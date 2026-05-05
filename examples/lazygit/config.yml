@@ -1,0 +1,20 @@
+promptToReturnFromSubprocess: false
+
+customCommands:
+  - key: "C"
+    context: "localBranches"
+    description: "open Codex in selected branch worktree"
+    command: "dev-handoff codex-current {{.SelectedLocalBranch.Name}}"
+    output: terminal
+
+  - key: "R"
+    context: "localBranches"
+    description: "open Neovim PR review in selected branch worktree"
+    command: "dev-handoff review-current {{.SelectedLocalBranch.Name}}"
+    output: terminal
+
+  - key: "W"
+    context: "localBranches"
+    description: "switch to selected branch worktree with wt"
+    command: "dev-handoff wt-current {{.SelectedLocalBranch.Name}}"
+    output: terminal

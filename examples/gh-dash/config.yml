@@ -1,0 +1,19 @@
+keybindings:
+  universal:
+    - key: L
+      name: lazygit repo
+      command: >
+        dev-handoff lazygit {{.RepoName}}
+  prs:
+    - key: C
+      name: wt switch PR
+      command: >
+        dev-handoff wt {{.RepoName}} pr:{{.PrNumber}}
+    - key: T
+      name: codex PR task
+      command: >
+        dev-handoff codex {{.RepoName}} pr:{{.PrNumber}}
+    - key: R
+      name: nvim PR review
+      command: >
+        dev-handoff review {{.RepoName}} pr:{{.PrNumber}} {{.PrNumber}}
