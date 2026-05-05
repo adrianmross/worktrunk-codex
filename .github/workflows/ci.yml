@@ -46,6 +46,7 @@ jobs:
       - name: Install skill for Goose
         env:
           HOME: ${{ runner.temp }}/home-goose
+          XDG_CONFIG_HOME: ${{ runner.temp }}/home-goose/.config
         run: |
           npx --yes skills@latest add . --skill worktrunk-agent-handoff --copy -y -g -a goose
-          test -f "$HOME/.config/goose/skills/worktrunk-agent-handoff/SKILL.md"
+          test -f "$XDG_CONFIG_HOME/goose/skills/worktrunk-agent-handoff/SKILL.md"
