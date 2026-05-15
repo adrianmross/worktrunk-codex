@@ -8,7 +8,7 @@ Codex plugin bundle for [`wt`](https://worktrunk.dev): repo-local WorkTrunk skil
 - Codex hooks that set `wt` branch markers:
   - `🤖` while Codex is working
   - `💬` when Codex is waiting for the next prompt
-- A Bash guard hook that blocks `git worktree add/remove` and tells Codex to use `wt`
+- A Bash guard hook that blocks `git worktree add/remove` and blocks raw branch switches away from the default branch in primary worktrees, keeping Codex on `wt` for branch work
 - Codex command docs for common WorkTrunk flows
 - Agent handoff guidance for launching Codex, Goose, or another agent through `wt switch -x`, with `gh-dash`, `gh-enhance`, lazygit, and Neovim treated as optional human-facing entrypoints
 - Standalone `skills` CLI install support via `skills/worktrunk-agent-handoff/SKILL.md`

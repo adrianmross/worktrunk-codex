@@ -15,7 +15,7 @@ Codex plugin for WorkTrunk.
 - `SessionStart` -> `💬`
 - `UserPromptSubmit` -> `🤖`
 - `Stop` -> `💬`
-- `PreToolUse` for `Bash` blocks raw `git worktree add/remove`
+- `PreToolUse` for `Bash` blocks raw `git worktree add/remove` and raw branch switches away from the default branch in primary worktrees
 
 ## Limitation
 
